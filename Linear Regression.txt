@@ -1,0 +1,96 @@
+# Import Header files
+
+
+import io
+import sys
+import pandas as pd
+from google.colab import files
+
+
+# Upload dataset file to Google drive
+
+uploaded = files.upload()
+
+# Read contents of CSV file
+
+df2 = pd.read_csv(io.BytesIO(uploaded['salaryData.csv']))
+
+# Display number of columns in data set
+
+print("There are",len(df2.columns),"columns:")
+
+# Print column details
+
+for x in df2.columns:
+    sys.stdout.write(str(x)+", ")
+
+# Print information about data set
+
+print("\n************")
+print("Dataset Info:")
+print(df2.info())
+print("\n************")
+print(df2)
+print("\n************")
+
+# Display the experience entries in data set
+
+exp=df2.iloc[:,0:1].values
+print(exp)
+
+# New section
+
+sal=df2.iloc[:,1].values
+print(sal)
+
+# Splitting the dataset into the Training set and Test set
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(exp, sal, test_size = 0.2, random_state = 0)
+
+
+
+
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+
+y_pred = regressor.predict(X_test)
+y_pred_train = regressor.predict(X_train)
+
+
+# print model score 
+print("Model Score: ", regressor.score(X_test, y_test))
+
+# print r_square_score
+from sklearn.metrics import r2_score
+print("R_square score: ", r2_score(y_test,y_pred))
+
+# Visualising the Test set results
+import matplotlib.pyplot as plt
+plt.scatter(X_train, y_train, color = 'red')
+plt.plot(X_train, regressor.predict(X_train), color = 'blue')
+plt.title('Salary vs Experience (Training set)')
+plt.xlabel('Years of Experience')
+plt.ylabel('Salary')
+plt.show()
+
+# Visualising the Test set results
+plt.scatter(X_test, y_test, color = 'red')
+plt.plot(X_train, regressor.predict(X_train), color = 'blue')
+plt.title('Salary vs Experience (Test set)')
+plt.xlabel('Years of Experience')
+plt.ylabel('Salary')
+plt.show()
+
+#prediction
+X_future_expereince = [[2],[4]]
+
+print ("Salaries of new employess joining would be :", regressor.predict(X_future_expereince))
+
+# Visualising the Test set results
+plt.scatter(X_future_expereince, regressor.predict(X_future_expereince), color = 'red')
+plt.plot(X_train, regressor.predict(X_train), color = 'blue')
+plt.title('Salary vs Experience (Test set)')
+plt.xlabel('Years of Experience')
+plt.ylabel('Salary')
+plt.show()
